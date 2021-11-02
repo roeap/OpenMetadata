@@ -262,6 +262,7 @@ describe('Test MyData page', () => {
           topicCount: 5,
           dashboardCount: 8,
           pipelineCount: 1,
+          thesaurusCount: 3,
         }}
         error=""
         feedData={formatDataResponse(mockData.data.hits.hits)}

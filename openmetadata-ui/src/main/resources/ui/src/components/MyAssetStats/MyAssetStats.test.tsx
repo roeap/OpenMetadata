@@ -26,6 +26,7 @@ describe('Test MyDataHeader Component', () => {
           topicCount: 13,
           dashboardCount: 10,
           pipelineCount: 3,
+          thesaurusCount: 7,
         }}
         ingestionCount={0}
       />,
@@ -48,6 +49,7 @@ describe('Test MyDataHeader Component', () => {
           topicCount: 13,
           dashboardCount: 10,
           pipelineCount: 3,
+          thesaurusCount: 7,
         }}
         ingestionCount={0}
       />,
@@ -70,6 +72,7 @@ describe('Test MyDataHeader Component', () => {
           topicCount: 13,
           dashboardCount: 10,
           pipelineCount: 3,
+          thesaurusCount: 7,
         }}
         ingestionCount={0}
       />,
@@ -92,6 +95,7 @@ describe('Test MyDataHeader Component', () => {
           topicCount: 13,
           dashboardCount: 10,
           pipelineCount: 3,
+          thesaurusCount: 4,
         }}
         ingestionCount={0}
       />,
@@ -116,6 +120,7 @@ describe('Test MyDataHeader Component', () => {
           topicCount: 13,
           dashboardCount: 10,
           pipelineCount: 3,
+          thesaurusCount: 7,
         }}
         ingestionCount={0}
       />,

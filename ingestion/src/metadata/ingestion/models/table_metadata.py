@@ -89,6 +89,23 @@ class TopicESDocument(BaseModel):
     doc_as_upsert: bool = True
 
 
+class ThesaurusESDocument(BaseModel):
+    """Thesaurus Elastic Search Mapping doc"""
+
+    thesaurus_id: str
+    thesaurus_name: str
+    entity_type: str = "thesaurus"
+    suggest: List[dict]
+    description: Optional[str] = None
+    last_updated_timestamp: Optional[int]
+    tags: List[str]
+    fqdn: str
+    tier: Optional[str] = None
+    schema_description: Optional[str] = None
+    owner: str
+    followers: List[str]
+
+
 class DashboardESDocument(BaseModel):
     """Elastic Search Mapping doc for Dashboards"""
 

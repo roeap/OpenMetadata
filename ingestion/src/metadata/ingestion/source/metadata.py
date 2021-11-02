@@ -22,6 +22,7 @@ from metadata.ingestion.api.common import Entity, WorkflowContext
 from metadata.ingestion.api.source import Source, SourceStatus
 from metadata.ingestion.ometa.ometa_api import OpenMetadata
 from metadata.ingestion.ometa.openmetadata_rest import MetadataServerConfig
+from metadata.ingestion.ometa.openmetadata_rest import Thesaurus
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,7 @@ class MetadataTablesRestSourceConfig(ConfigModel):
     include_tables: Optional[bool] = True
     include_topics: Optional[bool] = True
     include_dashboards: Optional[bool] = True
+    include_thesauruses: Optional[bool] = True
     include_pipelines: Optional[bool] = True
     limit_records: int = 1000
 
@@ -44,6 +46,10 @@ class MetadataSourceStatus(SourceStatus):
     def scanned_table(self, table_name: str) -> None:
         self.success.append(table_name)
         logger.info("Table Scanned: {}".format(table_name))
+
+    def scanned_thesaurus(self, thesaurus_name: str) -> None:
+        self.success.append(thesaurus_name)
+        logger.info("Thesaurus Scanned: {}".format(thesaurus_name))
 
     def scanned_topic(self, topic_name: str) -> None:
         self.success.append(topic_name)
@@ -93,6 +99,7 @@ class MetadataSource(Source[Entity]):
     def next_record(self) -> Iterable[Entity]:
         yield from self.fetch_table()
         yield from self.fetch_topic()
+        yield from self.fetch_thesaurus()
         yield from self.fetch_dashboard()
         yield from self.fetch_pipeline()
 
@@ -176,6 +183,23 @@ class MetadataSource(Source[Entity]):
                 if pipeline_entities.after is None:
                     break
                 after = pipeline_entities.after
+
+    def fetch_thesaurus(self) -> Thesaurus:
+        if self.config.include_thesauruses:
+            after = None
+            while True:
+                thesaurus_entities = self.metadata.list_entities(
+                    entity=Thesaurus,
+                    fields=["owner", "tags", "followers"],
+                    after=after,
+                    limit=self.config.limit_records,
+                )
+                for thesaurus in thesaurus_entities.entities:
+                    self.status.scanned_thesaurus(thesaurus.name)
+                    yield thesaurus
+                if thesaurus_entities.after is None:
+                    break
+                after = thesaurus_entities.after
 
     def get_status(self) -> SourceStatus:
         return self.status

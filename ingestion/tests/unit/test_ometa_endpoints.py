@@ -27,6 +27,7 @@ from metadata.generated.schema.entity.data.mlmodel import MlModel
 from metadata.generated.schema.entity.data.pipeline import Pipeline
 from metadata.generated.schema.entity.data.report import Report
 from metadata.generated.schema.entity.data.table import Table
+from metadata.generated.schema.entity.data.thesaurus import Thesaurus
 from metadata.generated.schema.entity.data.topic import Topic
 from metadata.generated.schema.entity.services.dashboardService import DashboardService
 from metadata.generated.schema.entity.services.databaseService import DatabaseService
@@ -50,6 +51,10 @@ class OMetaEndpointTest(TestCase):
         """
         Pass Entities and test their suffix generation
         """
+
+
+        # Thesaurus
+        self.assertEqual(self.metadata.get_suffix(Thesaurus), "/thesauruses")
 
         # ML
         self.assertEqual(self.metadata.get_suffix(MlModel), "/mlmodels")
