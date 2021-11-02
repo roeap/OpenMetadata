@@ -180,4 +180,13 @@ export const tabsInfo = [
     icon: Icons.PIPELINE_GREY,
     selectedIcon: Icons.PIPELINE,
   },
+  {
+    label: 'Thesauruses',
+    index: SearchIndex.THESAURUS,
+    sortingFields: topicSortingFields,
+    sortField: '',
+    tab: 5,
+    path: 'thesauruses',
+    icon: Icons.THESAURUS_GREY,
+  },
 ];

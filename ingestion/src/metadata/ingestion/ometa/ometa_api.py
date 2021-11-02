@@ -24,6 +24,7 @@ from metadata.generated.schema.entity.data.mlmodel import MlModel
 from metadata.generated.schema.entity.data.pipeline import Pipeline
 from metadata.generated.schema.entity.data.report import Report
 from metadata.generated.schema.entity.data.table import Table
+from metadata.generated.schema.entity.data.thesaurus import Thesaurus
 from metadata.generated.schema.entity.data.topic import Topic
 from metadata.generated.schema.entity.policies.policy import Policy
 from metadata.generated.schema.entity.services.dashboardService import DashboardService
@@ -137,6 +138,11 @@ class OpenMetadata(OMetaMlModelMixin, OMetaTableMixin, Generic[T, C]):
             entity, get_args(Union[MlModel, self.get_create_entity_type(MlModel)])
         ):
             return "/mlmodels"
+
+        if issubclass(
+            entity, get_args(Union[Thesaurus, self.get_create_entity_type(Thesaurus)])
+        ):
+            return "/thesauruses"
 
         if issubclass(
             entity, get_args(Union[Chart, self.get_create_entity_type(Chart)])

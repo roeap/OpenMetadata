@@ -20,20 +20,21 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.node.TextNode;
 import io.dropwizard.util.Strings;
-import java.lang.invoke.MethodHandles;
-import java.net.URI;
-import java.security.interfaces.RSAPublicKey;
-import java.util.Calendar;
+import lombok.SneakyThrows;
+import org.openmetadata.catalog.security.auth.CatalogSecurityContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
-import lombok.SneakyThrows;
-import org.openmetadata.catalog.security.auth.CatalogSecurityContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.lang.invoke.MethodHandles;
+import java.net.URI;
+import java.security.interfaces.RSAPublicKey;
+import java.util.Calendar;
 
 @Provider
 public class JwtFilter implements ContainerRequestFilter {

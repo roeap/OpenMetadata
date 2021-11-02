@@ -336,6 +336,7 @@ declare module 'Models' {
     topicCount: number;
     dashboardCount: number;
     pipelineCount: number;
+    thesaurusCount: number;
   };
 
   // topic interface start
@@ -386,7 +387,7 @@ declare module 'Models' {
   // topic interface end
 
   interface RecentlyViewedData {
-    entityType: 'dataset' | 'topic' | 'dashboard' | 'pipeline';
+    entityType: 'dataset' | 'topic' | 'dashboard' | 'pipeline' | 'thesaurus';
     fqn: string;
     serviceType?: string;
     timestamp: number;

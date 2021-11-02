@@ -142,6 +142,9 @@ public class SearchResource {
       case "table_search_index":
         searchSourceBuilder = buildTableSearchBuilder(query, from, size);
         break;
+      case "thesaurus_search_index":
+        searchSourceBuilder = buildThesaurusSearchBuilder(query, from, size);
+        break;
       default:
         searchSourceBuilder = buildAggregateSearchBuilder(query, from, size);
         break;
@@ -349,4 +352,30 @@ public class SearchResource {
 
     return searchSourceBuilder;
   }
+
+  private SearchSourceBuilder buildThesaurusSearchBuilder(String query, int from, int size) {
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        HighlightBuilder.Field highlightThesaurusName =
+                new HighlightBuilder.Field("thesaurus_name");
+        highlightThesaurusName.highlighterType("unified");
+        HighlightBuilder.Field highlightDescription =
+                new HighlightBuilder.Field("description");
+        highlightDescription.highlighterType("unified");
+        HighlightBuilder hb = new HighlightBuilder();
+        hb.field(highlightDescription);
+        hb.field(highlightThesaurusName);
+        hb.preTags("<span class=\"text-highlighter\">");
+        hb.postTags("</span>");
+        searchSourceBuilder.query(QueryBuilders.queryStringQuery(query)
+                .field("thesaurus_name", 5.0f)
+                .field("description")
+                .lenient(true))
+                .aggregation(AggregationBuilders.terms("EntityType").field("entity_type"))
+                .aggregation(AggregationBuilders.terms("Tier").field("tier"))
+                .aggregation(AggregationBuilders.terms("Tags").field("tags"))
+                .highlighter(hb)
+                .from(from).size(size);
+    
+        return searchSourceBuilder;
+      }
 }

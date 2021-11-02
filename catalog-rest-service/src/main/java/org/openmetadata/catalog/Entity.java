@@ -59,6 +59,7 @@ public final class Entity {
   public static final String MLMODEL = "mlmodel";
   // Not deleted to ensure the ordinal value of the entities after this remains the same
   public static final String UNUSED = "unused";
+  public static final String THESAURUS = "thesaurus";
   public static final String BOTS = "bots";
   public static final String LOCATION = "location";
 
