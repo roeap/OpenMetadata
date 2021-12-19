@@ -63,7 +63,7 @@ plugins: Dict[str, Set[str]] = {
     "bigquery": {"openmetadata-sqlalchemy-bigquery==0.2.2"},
     "bigquery-usage": {"google-cloud-logging", "cachetools"},
     "docker": {"docker==5.0.3"},
-    "dbt": {},
+    "deltalake": {"pyspark"},
     "druid": {"pydruid>=0.6.2"},
     "elasticsearch": {"elasticsearch~=7.13.1"},
     "glue": {"boto3~=1.19.12"},
