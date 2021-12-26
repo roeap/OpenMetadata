@@ -40,6 +40,7 @@ import org.openmetadata.catalog.elasticsearch.ElasticSearchIndexDefinition.Elast
 import org.openmetadata.catalog.entity.data.Dashboard;
 import org.openmetadata.catalog.entity.data.Pipeline;
 import org.openmetadata.catalog.entity.data.Table;
+import org.openmetadata.catalog.entity.data.Thesaurus;
 import org.openmetadata.catalog.entity.data.Topic;
 import org.openmetadata.catalog.events.EventHandler;
 import org.openmetadata.catalog.type.ChangeDescription;
@@ -107,6 +108,12 @@ public class ElasticSearchEventHandler implements EventHandler {
             Pipeline instance = (Pipeline) entity;
             updateRequest = updatePipeline(instance, responseContext);
           }
+        } else if (entityClass.toLowerCase().endsWith(Entity.THESAURUS.toLowerCase())) {
+          boolean exists = esIndexDefinition.checkIndexExistsOrCreate(ElasticSearchIndexType.THESAURUS_SEARCH_INDEX);
+          if (exists) {
+            Thesaurus instance = (Thesaurus) entity;
+            updateRequest = updateThesaurus(instance, responseContext);
+          }
         } else if (entityClass.toLowerCase().equalsIgnoreCase(ChangeEvent.class.toString())) {
           ChangeEvent changeEvent = (ChangeEvent) entity;
           updateRequest = applyChangeEvent(changeEvent);
@@ -126,7 +133,6 @@ public class ElasticSearchEventHandler implements EventHandler {
     ElasticSearchIndexType esIndexType = esIndexDefinition.getIndexMappingByEntityType(entityType);
     UUID entityId = event.getEntityId();
     ChangeDescription changeDescription = event.getChangeDescription();
-
     List<FieldChange> fieldsAdded = changeDescription.getFieldsAdded();
     StringBuilder scriptTxt = new StringBuilder();
     Map<String, Object> fieldAddParams = new HashMap<>();
@@ -234,6 +240,22 @@ public class ElasticSearchEventHandler implements EventHandler {
     } else {
       // only upsert if it's a new entity
       updateRequest.doc(JsonUtils.pojoToJson(pipelineESIndex), XContentType.JSON);
+      updateRequest.docAsUpsert(true);
+    }
+    return updateRequest;
+  }
+
+  private UpdateRequest updateThesaurus(Thesaurus instance, ContainerResponseContext responseContext)
+      throws JsonProcessingException {
+    int responseCode = responseContext.getStatus();
+    ThesaurusESIndex esIndex = ThesaurusESIndex.builder(instance, responseCode).build();
+    UpdateRequest updateRequest =
+        new UpdateRequest(ElasticSearchIndexType.THESAURUS_SEARCH_INDEX.indexName, instance.getId().toString());
+    if (responseCode != Response.Status.CREATED.getStatusCode()) {
+      scriptedUpsert(esIndex, updateRequest);
+    } else {
+      // only upsert if it's a new entity
+      updateRequest.doc(JsonUtils.pojoToJson(esIndex), XContentType.JSON);
       updateRequest.docAsUpsert(true);
     }
     return updateRequest;

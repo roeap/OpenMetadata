@@ -60,7 +60,6 @@ import org.openmetadata.catalog.jdbi3.LocationRepository.LocationEntityInterface
 import org.openmetadata.catalog.jdbi3.MessagingServiceRepository.MessagingServiceEntityInterface;
 import org.openmetadata.catalog.jdbi3.MetricsRepository.MetricsEntityInterface;
 import org.openmetadata.catalog.jdbi3.MlModelRepository.MlModelEntityInterface;
-import org.openmetadata.catalog.jdbi3.ThesaurusRepository.ThesaurusEntityInterface;
 import org.openmetadata.catalog.jdbi3.PipelineRepository.PipelineEntityInterface;
 import org.openmetadata.catalog.jdbi3.PipelineServiceRepository.PipelineServiceEntityInterface;
 import org.openmetadata.catalog.jdbi3.PolicyRepository.PolicyEntityInterface;
@@ -69,6 +68,7 @@ import org.openmetadata.catalog.jdbi3.RoleRepository.RoleEntityInterface;
 import org.openmetadata.catalog.jdbi3.StorageServiceRepository.StorageServiceEntityInterface;
 import org.openmetadata.catalog.jdbi3.TableRepository.TableEntityInterface;
 import org.openmetadata.catalog.jdbi3.TeamRepository.TeamEntityInterface;
+import org.openmetadata.catalog.jdbi3.ThesaurusRepository.ThesaurusEntityInterface;
 import org.openmetadata.catalog.jdbi3.TopicRepository.TopicEntityInterface;
 import org.openmetadata.catalog.jdbi3.UserRepository.UserEntityInterface;
 import org.openmetadata.catalog.jdbi3.WebhookRepository.WebhookEntityInterface;
@@ -131,7 +131,7 @@ public interface CollectionDAO {
 
   @CreateSqlObject
   MlModelDAO mlModelDAO();
-  
+
   @CreateSqlObject
   ThesaurusDAO thesaurusDAO();
 
@@ -659,15 +659,21 @@ public interface CollectionDAO {
     }
   }
 
-  interface ThesaurusDAO extends EntityDAO<Thesaurus>{
+  interface ThesaurusDAO extends EntityDAO<Thesaurus> {
     @Override
-    default String getTableName() { return "thesaurus_entity"; }
+    default String getTableName() {
+      return "thesaurus_entity";
+    }
 
     @Override
-    default Class<Thesaurus> getEntityClass() { return Thesaurus.class; }
+    default Class<Thesaurus> getEntityClass() {
+      return Thesaurus.class;
+    }
 
     @Override
-    default String getNameColumn() { return "fullyQualifiedName"; }
+    default String getNameColumn() {
+      return "fullyQualifiedName";
+    }
 
     @Override
     default EntityReference getEntityReference(Thesaurus entity) {
