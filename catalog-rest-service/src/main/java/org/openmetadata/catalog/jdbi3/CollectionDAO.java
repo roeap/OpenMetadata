@@ -13,6 +13,10 @@
 
 package org.openmetadata.catalog.jdbi3;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 import org.jdbi.v3.sqlobject.CreateSqlObject;
@@ -54,7 +58,6 @@ import org.openmetadata.catalog.jdbi3.LocationRepository.LocationEntityInterface
 import org.openmetadata.catalog.jdbi3.MessagingServiceRepository.MessagingServiceEntityInterface;
 import org.openmetadata.catalog.jdbi3.MetricsRepository.MetricsEntityInterface;
 import org.openmetadata.catalog.jdbi3.MlModelRepository.MlModelEntityInterface;
-import org.openmetadata.catalog.jdbi3.ThesaurusRepository.ThesaurusEntityInterface;
 import org.openmetadata.catalog.jdbi3.PipelineRepository.PipelineEntityInterface;
 import org.openmetadata.catalog.jdbi3.PipelineServiceRepository.PipelineServiceEntityInterface;
 import org.openmetadata.catalog.jdbi3.PolicyRepository.PolicyEntityInterface;
@@ -62,6 +65,7 @@ import org.openmetadata.catalog.jdbi3.ReportRepository.ReportEntityInterface;
 import org.openmetadata.catalog.jdbi3.StorageServiceRepository.StorageServiceEntityInterface;
 import org.openmetadata.catalog.jdbi3.TableRepository.TableEntityInterface;
 import org.openmetadata.catalog.jdbi3.TeamRepository.TeamEntityInterface;
+import org.openmetadata.catalog.jdbi3.ThesaurusRepository.ThesaurusEntityInterface;
 import org.openmetadata.catalog.jdbi3.TopicRepository.TopicEntityInterface;
 import org.openmetadata.catalog.jdbi3.UserRepository.UserEntityInterface;
 import org.openmetadata.catalog.jdbi3.WebhookRepository.WebhookEntityInterface;
@@ -72,11 +76,6 @@ import org.openmetadata.catalog.type.UsageDetails;
 import org.openmetadata.catalog.type.UsageStats;
 import org.openmetadata.catalog.type.Webhook;
 import org.openmetadata.catalog.util.EntityUtil;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
 
 public interface CollectionDAO {
   @CreateSqlObject
@@ -126,7 +125,7 @@ public interface CollectionDAO {
 
   @CreateSqlObject
   MlModelDAO mlModelDAO();
-  
+
   @CreateSqlObject
   ThesaurusDAO thesaurusDAO();
 
@@ -609,15 +608,21 @@ public interface CollectionDAO {
     }
   }
 
-  interface ThesaurusDAO extends EntityDAO<Thesaurus>{
+  interface ThesaurusDAO extends EntityDAO<Thesaurus> {
     @Override
-    default String getTableName() { return "thesaurus_entity"; }
+    default String getTableName() {
+      return "thesaurus_entity";
+    }
 
     @Override
-    default Class<Thesaurus> getEntityClass() { return Thesaurus.class; }
+    default Class<Thesaurus> getEntityClass() {
+      return Thesaurus.class;
+    }
 
     @Override
-    default String getNameColumn() { return "fullyQualifiedName"; }
+    default String getNameColumn() {
+      return "fullyQualifiedName";
+    }
 
     @Override
     default EntityReference getEntityReference(Thesaurus entity) {
@@ -1141,7 +1146,7 @@ public interface CollectionDAO {
     }
 
     @SqlQuery(
-            "SELECT json FROM change_event WHERE "
+        "SELECT json FROM change_event WHERE "
             + "eventType = :eventType AND (entityType IN (<entityTypes>)) AND dateTime >= :dateTime "
             + "ORDER BY dateTime ASC")
     List<String> listWithEntityFilter(
@@ -1149,7 +1154,8 @@ public interface CollectionDAO {
         @BindList("entityTypes") List<String> entityTypes,
         @Bind("dateTime") String dateTime);
 
-    @SqlQuery("SELECT json FROM change_event WHERE "
+    @SqlQuery(
+        "SELECT json FROM change_event WHERE "
             + "eventType = :eventType AND dateTime >= :dateTime "
             + "ORDER BY dateTime ASC")
     List<String> listWithoutEntityFilter(@Bind("eventType") String eventType, @Bind("dateTime") String dateTime);

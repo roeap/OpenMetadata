@@ -26,12 +26,18 @@ public class WebhookCallbackResource {
   /** Webhook endpoint that immediately responds to callback. The events received are collected in a queue */
   @POST
   public Response receiveEvent(
-          @Context UriInfo uriInfo, @Context SecurityContext securityContext, EventResource.ChangeEventList events) {
+      @Context UriInfo uriInfo, @Context SecurityContext securityContext, EventResource.ChangeEventList events) {
     changeEvents.addAll(events.getData());
     return Response.ok().build();
   }
-  public ConcurrentLinkedQueue<ChangeEvent> getEvents() { return changeEvents; }
-  public void clearEvents() { changeEvents.clear(); }
+
+  public ConcurrentLinkedQueue<ChangeEvent> getEvents() {
+    return changeEvents;
+  }
+
+  public void clearEvents() {
+    changeEvents.clear();
+  }
 
   /** Webhook endpoint that immediately responds to callback. This only counts the number of events received */
   @POST
@@ -41,7 +47,10 @@ public class WebhookCallbackResource {
     counter.incrementAndGet();
     return Response.ok().build();
   }
-  public int getCount() { return counter.get(); }
+
+  public int getCount() {
+    return counter.get();
+  }
 
   /** Webhook endpoint that immediately responds to callback. The events received are ignored */
   @POST
@@ -64,8 +73,14 @@ public class WebhookCallbackResource {
     }
     return Response.ok().build();
   }
-  public ConcurrentLinkedQueue<ChangeEvent> getEventsSlowServer() { return changeEventsSlowServer; }
-  public void clearEventsSlowServer() { changeEventsSlowServer.clear(); }
+
+  public ConcurrentLinkedQueue<ChangeEvent> getEventsSlowServer() {
+    return changeEventsSlowServer;
+  }
+
+  public void clearEventsSlowServer() {
+    changeEventsSlowServer.clear();
+  }
 
   /** Webhook endpoint that responds to callback with 15 seconds delay. The events received are collected in a queue */
   @POST
