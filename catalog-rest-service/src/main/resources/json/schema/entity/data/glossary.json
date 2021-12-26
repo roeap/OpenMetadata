@@ -1,29 +1,29 @@
 {
-    "$id": "https://open-metadata.org/schema/entity/data/thesaurus.json",
+    "$id": "https://open-metadata.org/schema/entity/data/glossary.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Thesaurus",
-    "description": "This schema defines the Thesaurus entity based on SKOS.",
+    "title": "Glossary",
+    "description": "This schema defines the Glossary entity based on SKOS.",
     "type": "object",
   
     "properties" : {
       "id": {
-        "description": "Unique identifier of a thesaurus instance.",
+        "description": "Unique identifier of a glossary instance.",
         "$ref": "../../type/basic.json#/definitions/uuid"
       },
       "name": {
-        "description": "Name that identifies this thesaurus.",
+        "description": "Name that identifies this glossary.",
         "type": "string",
         "minLength": 1,
         "maxLength": 128
       },
       "fullyQualifiedName": {
-        "description": "A unique name that identifies a thesaurus.",
+        "description": "A unique name that identifies a glossary.",
         "type": "string",
         "minLength": 1,
         "maxLength": 256
       },
       "displayName": {
-        "description": "Display Name that identifies this thesaurus.",
+        "description": "Display Name that identifies this glossary.",
         "type": "string"
       },
       "version" : {
@@ -39,7 +39,7 @@
         "type": "string"
       },
       "description": {
-        "description": "Description of the thesaurus.",
+        "description": "Description of the glossary.",
         "type": "string"
       },
       "skos": {
@@ -51,15 +51,15 @@
         "$ref": "../../type/basic.json#/definitions/href"
       },
       "owner": {
-        "description": "Owner of this thesaurus.",
+        "description": "Owner of this glossary.",
         "$ref": "../../type/entityReference.json"
       },
       "followers": {
-        "description": "Followers of this thesaurus.",
+        "description": "Followers of this glossary.",
         "$ref": "../../type/entityReference.json#/definitions/entityReferenceList"
       },
       "tags": {
-        "description": "Tags for this thesaurus.",
+        "description": "Tags for this glossary.",
         "type": "array",
         "items": {
           "$ref": "../../type/tagLabel.json"
@@ -67,7 +67,7 @@
         "default": null
       },
       "usageSummary" : {
-        "description": "Latest usage information for this thesaurus.",
+        "description": "Latest usage information for this glossary.",
         "$ref": "../../type/usageDetails.json",
         "default": null
       },

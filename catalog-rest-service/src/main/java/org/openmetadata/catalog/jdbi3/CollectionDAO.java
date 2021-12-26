@@ -30,13 +30,13 @@ import org.openmetadata.catalog.entity.Bots;
 import org.openmetadata.catalog.entity.data.Chart;
 import org.openmetadata.catalog.entity.data.Dashboard;
 import org.openmetadata.catalog.entity.data.Database;
+import org.openmetadata.catalog.entity.data.Glossary;
 import org.openmetadata.catalog.entity.data.Location;
 import org.openmetadata.catalog.entity.data.Metrics;
 import org.openmetadata.catalog.entity.data.MlModel;
 import org.openmetadata.catalog.entity.data.Pipeline;
 import org.openmetadata.catalog.entity.data.Report;
 import org.openmetadata.catalog.entity.data.Table;
-import org.openmetadata.catalog.entity.data.Thesaurus;
 import org.openmetadata.catalog.entity.data.Topic;
 import org.openmetadata.catalog.entity.policies.Policy;
 import org.openmetadata.catalog.entity.services.DashboardService;
@@ -54,6 +54,7 @@ import org.openmetadata.catalog.jdbi3.DashboardRepository.DashboardEntityInterfa
 import org.openmetadata.catalog.jdbi3.DashboardServiceRepository.DashboardServiceEntityInterface;
 import org.openmetadata.catalog.jdbi3.DatabaseRepository.DatabaseEntityInterface;
 import org.openmetadata.catalog.jdbi3.DatabaseServiceRepository.DatabaseServiceEntityInterface;
+import org.openmetadata.catalog.jdbi3.GlossaryRepository.GlossaryEntityInterface;
 import org.openmetadata.catalog.jdbi3.LocationRepository.LocationEntityInterface;
 import org.openmetadata.catalog.jdbi3.MessagingServiceRepository.MessagingServiceEntityInterface;
 import org.openmetadata.catalog.jdbi3.MetricsRepository.MetricsEntityInterface;
@@ -65,7 +66,6 @@ import org.openmetadata.catalog.jdbi3.ReportRepository.ReportEntityInterface;
 import org.openmetadata.catalog.jdbi3.StorageServiceRepository.StorageServiceEntityInterface;
 import org.openmetadata.catalog.jdbi3.TableRepository.TableEntityInterface;
 import org.openmetadata.catalog.jdbi3.TeamRepository.TeamEntityInterface;
-import org.openmetadata.catalog.jdbi3.ThesaurusRepository.ThesaurusEntityInterface;
 import org.openmetadata.catalog.jdbi3.TopicRepository.TopicEntityInterface;
 import org.openmetadata.catalog.jdbi3.UserRepository.UserEntityInterface;
 import org.openmetadata.catalog.jdbi3.WebhookRepository.WebhookEntityInterface;
@@ -127,7 +127,7 @@ public interface CollectionDAO {
   MlModelDAO mlModelDAO();
 
   @CreateSqlObject
-  ThesaurusDAO thesaurusDAO();
+  GlossaryDAO glossaryDAO();
 
   @CreateSqlObject
   BotsDAO botsDAO();
@@ -608,15 +608,15 @@ public interface CollectionDAO {
     }
   }
 
-  interface ThesaurusDAO extends EntityDAO<Thesaurus> {
+  interface GlossaryDAO extends EntityDAO<Glossary> {
     @Override
     default String getTableName() {
-      return "thesaurus_entity";
+      return "glossary_entity";
     }
 
     @Override
-    default Class<Thesaurus> getEntityClass() {
-      return Thesaurus.class;
+    default Class<Glossary> getEntityClass() {
+      return Glossary.class;
     }
 
     @Override
@@ -625,8 +625,8 @@ public interface CollectionDAO {
     }
 
     @Override
-    default EntityReference getEntityReference(Thesaurus entity) {
-      return new ThesaurusEntityInterface(entity).getEntityReference();
+    default EntityReference getEntityReference(Glossary entity) {
+      return new GlossaryEntityInterface(entity).getEntityReference();
     }
   }
 

@@ -194,12 +194,12 @@ TOPIC_ELASTICSEARCH_INDEX_MAPPING = textwrap.dedent(
     """
 )
 
-THESAURUS_ELASTICSEARCH_INDEX_MAPPING = textwrap.dedent(
+GLOSSARY_ELASTICSEARCH_INDEX_MAPPING = textwrap.dedent(
     """
     {
     "mappings":{
           "properties": {
-            "thesaurus_name": {
+            "glossary_name": {
               "type":"text"
             },
             "display_name": {

@@ -181,12 +181,12 @@ export const tabsInfo = [
     selectedIcon: Icons.PIPELINE,
   },
   {
-    label: 'Thesauruses',
-    index: SearchIndex.THESAURUS,
+    label: 'Glossary',
+    index: SearchIndex.GLOSSARY,
     sortingFields: topicSortingFields,
     sortField: '',
     tab: 5,
-    path: 'thesauruses',
-    icon: Icons.THESAURUS_GREY,
+    path: 'glossary',
+    icon: Icons.GLOSSARY_GREY,
   },
 ];

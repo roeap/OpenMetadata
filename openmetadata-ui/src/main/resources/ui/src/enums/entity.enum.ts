@@ -17,7 +17,7 @@ export enum EntityType {
   TOPIC = 'topic',
   DASHBOARD = 'dashboard',
   PIPELINE = 'pipeline',
-  THESAURUS = 'thesaurus',
+  GLOSSARY = 'glossary',
 }
 
 export enum ChangeType {

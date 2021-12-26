@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.openmetadata.catalog.resources.thesauruses;
+package org.openmetadata.catalog.resources.glossary;
 
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
@@ -36,10 +36,10 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.openmetadata.catalog.CatalogApplicationTest;
 import org.openmetadata.catalog.Entity;
-import org.openmetadata.catalog.api.data.CreateThesaurus;
-import org.openmetadata.catalog.entity.data.Thesaurus;
+import org.openmetadata.catalog.api.data.CreateGlossary;
+import org.openmetadata.catalog.entity.data.Glossary;
 import org.openmetadata.catalog.exception.CatalogExceptionMessage;
-import org.openmetadata.catalog.jdbi3.ThesaurusRepository.ThesaurusEntityInterface;
+import org.openmetadata.catalog.jdbi3.GlossaryRepository.GlossaryEntityInterface;
 import org.openmetadata.catalog.resources.EntityResourceTest;
 import org.openmetadata.catalog.type.EntityReference;
 import org.openmetadata.catalog.util.TestUtils;
@@ -47,17 +47,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ThesaurusResourceTest extends EntityResourceTest<Thesaurus> {
-  private static final Logger LOG = LoggerFactory.getLogger(ThesaurusResourceTest.class);
-  // public static Database DATABASE;
+public class GlossaryResourceTest extends EntityResourceTest<Glossary> {
+  private static final Logger LOG = LoggerFactory.getLogger(GlossaryResourceTest.class);
 
-  public ThesaurusResourceTest() {
+  public GlossaryResourceTest() {
     super(
-        Entity.THESAURUS,
-        Thesaurus.class,
-        ThesaurusResource.ThesaurusList.class,
-        "thesauruses",
-        ThesaurusResource.FIELDS,
+        Entity.GLOSSARY,
+        Glossary.class,
+        GlossaryResource.GlossaryList.class,
+        "glossary",
+        GlossaryResource.FIELDS,
         true,
         true,
         true);
@@ -71,7 +70,7 @@ public class ThesaurusResourceTest extends EntityResourceTest<Thesaurus> {
   @Override
   public Object createRequest(String name, String description, String displayName, EntityReference owner)
       throws URISyntaxException {
-    return new CreateThesaurus()
+    return new CreateGlossary()
         .withName(name)
         .withDescription(description)
         .withDisplayName(displayName)
@@ -109,107 +108,107 @@ public class ThesaurusResourceTest extends EntityResourceTest<Thesaurus> {
   // {}
 
   @Test
-  public void post_validThesauruses_200_OK(TestInfo test) throws IOException {
-    CreateThesaurus create = create(test).withDescription("description");
+  public void post_validGlossary_200_OK(TestInfo test) throws IOException {
+    CreateGlossary create = create(test).withDescription("description");
     createAndCheckEntity(create, adminAuthHeaders());
   }
 
   @Test
-  public void post_thesaurusWithUserOwner_200_ok(TestInfo test) throws IOException {
+  public void post_glossaryWithUserOwner_200_ok(TestInfo test) throws IOException {
     createAndCheckEntity(create(test).withOwner(USER_OWNER1), adminAuthHeaders());
   }
 
   @Test
-  public void post_thesaurusWithTeamOwner_200_ok(TestInfo test) throws IOException {
+  public void post_glossaryWithTeamOwner_200_ok(TestInfo test) throws IOException {
     createAndCheckEntity(create(test).withOwner(TEAM_OWNER1), adminAuthHeaders());
   }
 
   // @Test
-  // public void post_thesaurusWithInvalidOwnerType_4xx(TestInfo test) {
+  // public void post_glossaryWithInvalidOwnerType_4xx(TestInfo test) {
   //   EntityReference owner = new EntityReference().withId(TEAM1.getId()); /* No owner type is set */
-  //   CreateThesaurus create = create(test).withOwner(owner);
+  //   CreateGlossary create = create(test).withOwner(owner);
   //   HttpResponseException exception = assertThrows(HttpResponseException.class, () ->
   //           createEntity(create, adminAuthHeaders()));
   //   TestUtils.assertResponseContains(exception, BAD_REQUEST, "type must not be null");
   // }
 
   @Test
-  public void post_thesaurus_as_non_admin_401(TestInfo test) {
-    CreateThesaurus create = create(test);
+  public void post_glossary_as_non_admin_401(TestInfo test) {
+    CreateGlossary create = create(test);
     HttpResponseException exception =
         assertThrows(HttpResponseException.class, () -> createEntity(create, authHeaders("test@open-metadata.org")));
     assertResponse(exception, FORBIDDEN, "Principal: CatalogPrincipal{name='test'} is not admin");
   }
 
   @Test
-  public void get_nonExistentThesaurus_404_notFound() {
+  public void get_nonExistentGlossary_404_notFound() {
     HttpResponseException exception =
         assertThrows(HttpResponseException.class, () -> getEntity(NON_EXISTENT_ENTITY, adminAuthHeaders()));
-    assertResponse(exception, NOT_FOUND, CatalogExceptionMessage.entityNotFound(Entity.THESAURUS, NON_EXISTENT_ENTITY));
+    assertResponse(exception, NOT_FOUND, CatalogExceptionMessage.entityNotFound(Entity.GLOSSARY, NON_EXISTENT_ENTITY));
   }
 
   @Test
-  public void delete_thesaurus_200_ok(TestInfo test) throws HttpResponseException {
-    Thesaurus thesaurus = createEntity(create(test), adminAuthHeaders());
-    deleteThesaurus(thesaurus.getId(), adminAuthHeaders());
+  public void delete_glossary_200_ok(TestInfo test) throws HttpResponseException {
+    Glossary glossary = createEntity(create(test), adminAuthHeaders());
+    deleteGlossary(glossary.getId(), adminAuthHeaders());
   }
 
   //   @Test
-  //   public void delete_thesaurus_as_non_admin_401(TestInfo test) throws HttpResponseException {
-  //     Thesaurus thesaurus = createEntity(create(test), adminAuthHeaders());
+  //   public void delete_glossary_as_non_admin_401(TestInfo test) throws HttpResponseException {
+  //     Glossary glossary = createEntity(create(test), adminAuthHeaders());
   //     HttpResponseException exception = assertThrows(HttpResponseException.class, () ->
-  //             deleteThesaurus(thesaurus.getId(), authHeaders("test@open-metadata.org")));
+  //             deleteGlossary(glossary.getId(), authHeaders("test@open-metadata.org")));
   //     assertResponse(exception, FORBIDDEN, "Principal: CatalogPrincipal{name='test'} is not admin");
   //   }
 
   @Test
-  public void delete_nonExistentThesaurus_404() {
+  public void delete_nonExistentGlossary_404() {
     HttpResponseException exception =
         assertThrows(HttpResponseException.class, () -> getEntity(NON_EXISTENT_ENTITY, adminAuthHeaders()));
-    assertResponse(exception, NOT_FOUND, CatalogExceptionMessage.entityNotFound(Entity.THESAURUS, NON_EXISTENT_ENTITY));
+    assertResponse(exception, NOT_FOUND, CatalogExceptionMessage.entityNotFound(Entity.GLOSSARY, NON_EXISTENT_ENTITY));
   }
 
   // @Test
-  // public void put_ThesaurusCreate_200(TestInfo test) throws HttpResponseException {
-  //   // Create a new Thesaurus with PUT
-  //   CreateThesaurus request = create(test).withOwner(USER_OWNER1);
-  //   updateAndCheckThesaurus(null, request.withName(test.getDisplayName()).withDescription(null), CREATED,
+  // public void put_GlossaryCreate_200(TestInfo test) throws HttpResponseException {
+  //   // Create a new Glossary with PUT
+  //   CreateGlossary request = create(test).withOwner(USER_OWNER1);
+  //   updateAndCheckGlossary(null, request.withName(test.getDisplayName()).withDescription(null), CREATED,
   //           adminAuthHeaders(), NO_CHANGE);
   // }
 
-  public static CreateThesaurus create(TestInfo test) {
+  public static CreateGlossary create(TestInfo test) {
     return create(test, 0);
   }
 
-  public static CreateThesaurus create(TestInfo test, int index) {
-    return new CreateThesaurus().withName(getThesaurusName(test, index));
+  public static CreateGlossary create(TestInfo test, int index) {
+    return new CreateGlossary().withName(getGlossaryName(test, index));
   }
 
   /**
-   * A method variant to be called form other tests to create a thesaurus without depending on Database, DatabaseService
+   * A method variant to be called form other tests to create a glossary without depending on Database, DatabaseService
    * set up in the {@code setup()} method
    */
-  public Thesaurus createEntity(TestInfo test, int index) throws IOException {
-    CreateThesaurus create = new CreateThesaurus().withName(getThesaurusName(test, index));
+  public Glossary createEntity(TestInfo test, int index) throws IOException {
+    CreateGlossary create = new CreateGlossary().withName(getGlossaryName(test, index));
     return createEntity(create, adminAuthHeaders());
   }
 
-  private void deleteThesaurus(UUID id, Map<String, String> authHeaders) throws HttpResponseException {
-    TestUtils.delete(CatalogApplicationTest.getResource("thesauruses/" + id), authHeaders);
+  private void deleteGlossary(UUID id, Map<String, String> authHeaders) throws HttpResponseException {
+    TestUtils.delete(CatalogApplicationTest.getResource("glossary/" + id), authHeaders);
 
     // Check to make sure database entity does not exist
     HttpResponseException exception = assertThrows(HttpResponseException.class, () -> getEntity(id, authHeaders));
-    assertResponse(exception, NOT_FOUND, CatalogExceptionMessage.entityNotFound(Entity.THESAURUS, id));
+    assertResponse(exception, NOT_FOUND, CatalogExceptionMessage.entityNotFound(Entity.GLOSSARY, id));
   }
 
-  public static String getThesaurusName(TestInfo test, int index) {
-    return String.format("thesaurus%d_%s", index, test.getDisplayName());
+  public static String getGlossaryName(TestInfo test, int index) {
+    return String.format("glossary%d_%s", index, test.getDisplayName());
   }
 
   @Override
-  public void validateCreatedEntity(Thesaurus createdEntity, Object request, Map<String, String> authHeaders)
+  public void validateCreatedEntity(Glossary createdEntity, Object request, Map<String, String> authHeaders)
       throws HttpResponseException {
-    CreateThesaurus createRequest = (CreateThesaurus) request;
+    CreateGlossary createRequest = (CreateGlossary) request;
     validateCommonEntityFields(
         getEntityInterface(createdEntity),
         createRequest.getDescription(),
@@ -222,13 +221,13 @@ public class ThesaurusResourceTest extends EntityResourceTest<Thesaurus> {
   }
 
   @Override
-  public void validateUpdatedEntity(Thesaurus updated, Object request, Map<String, String> authHeaders)
+  public void validateUpdatedEntity(Glossary updated, Object request, Map<String, String> authHeaders)
       throws HttpResponseException {
     validateCreatedEntity(updated, request, authHeaders);
   }
 
   @Override
-  public void compareEntities(Thesaurus expected, Thesaurus patched, Map<String, String> authHeaders)
+  public void compareEntities(Glossary expected, Glossary patched, Map<String, String> authHeaders)
       throws HttpResponseException {
     validateCommonEntityFields(
         getEntityInterface(patched),
@@ -242,12 +241,12 @@ public class ThesaurusResourceTest extends EntityResourceTest<Thesaurus> {
   }
 
   @Override
-  public ThesaurusEntityInterface getEntityInterface(Thesaurus entity) {
-    return new ThesaurusEntityInterface(entity);
+  public GlossaryEntityInterface getEntityInterface(Glossary entity) {
+    return new GlossaryEntityInterface(entity);
   }
 
   @Override
-  public void validateGetWithDifferentFields(Thesaurus entity, boolean byName) throws HttpResponseException {}
+  public void validateGetWithDifferentFields(Glossary entity, boolean byName) throws HttpResponseException {}
 
   @Override
   public void assertFieldChange(String fieldName, Object expected, Object actual) throws IOException {
