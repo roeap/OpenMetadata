@@ -1,11 +1,8 @@
 /*
- *  Licensed to the Apache Software Foundation (ASF) under one or more
- *  contributor license agreements. See the NOTICE file distributed with
- *  this work for additional information regarding copyright ownership.
- *  The ASF licenses this file to You under the Apache License, Version 2.0
- *  (the "License"); you may not use this file except in compliance with
- *  the License. You may obtain a copy of the License at
- *
+ *  Copyright 2021 Collate
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *  http://www.apache.org/licenses/LICENSE-2.0
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -65,6 +62,7 @@ import org.openmetadata.catalog.jdbi3.ThesaurusRepository;
 import org.openmetadata.catalog.resources.Collection;
 import org.openmetadata.catalog.security.CatalogAuthorizer;
 import org.openmetadata.catalog.security.SecurityUtil;
+import org.openmetadata.catalog.type.EntityHistory;
 import org.openmetadata.catalog.type.EntityReference;
 import org.openmetadata.catalog.util.EntityUtil.Fields;
 import org.openmetadata.catalog.util.RestUtil;
@@ -224,6 +222,54 @@ public class ThesaurusResource {
     return addHref(uriInfo, thesaurus);
   }
 
+  @GET
+  @Path("/{id}/versions")
+  @Operation(
+          summary = "List thesaurus versions",
+          tags = "thesauruses",
+          description = "Get a list of all the versions of a thesaurus identified by `id`",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "List of thesaurus versions",
+                          content = @Content(mediaType = "application/json", schema = @Schema(implementation = EntityHistory.class)))
+          })
+  public EntityHistory listVersions(
+          @Context UriInfo uriInfo,
+          @Context SecurityContext securityContext,
+          @Parameter(description = "thesaurus Id", schema = @Schema(type = "string")) @PathParam("id") String id)
+          throws IOException, ParseException {
+    return dao.listVersions(id);
+  }
+
+  @GET
+  @Path("/{id}/versions/{version}")
+  @Operation(
+          summary = "Get a version of the thesaurus",
+          tags = "thesauruses",
+          description = "Get a version of the thesaurus by given `id`",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "thesaurus",
+                          content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                                  Thesaurus.class))),
+                  @ApiResponse(
+                          responseCode = "404",
+                          description = "Thesaurus for instance {id} and version {version} is " + "not found")
+          })
+  public Thesaurus getVersion(
+          @Context UriInfo uriInfo,
+          @Context SecurityContext securityContext,
+          @Parameter(description = "thesaurus Id", schema = @Schema(type = "string")) @PathParam("id") String id,
+          @Parameter(
+                  description = "thesaurus version number in the form `major`.`minor`",
+                  schema = @Schema(type = "string", example = "0.1 or 1.1"))
+          @PathParam("version")
+                  String version)
+          throws IOException, ParseException {
+    return dao.getVersion(id, version);
+  }
   @POST
   @Operation(
       summary = "Create a thesaurus",
