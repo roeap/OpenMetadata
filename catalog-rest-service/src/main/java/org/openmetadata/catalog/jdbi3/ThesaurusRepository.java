@@ -46,8 +46,8 @@ public class ThesaurusRepository extends EntityRepository<Thesaurus> {
 
   public ThesaurusRepository(CollectionDAO dao) {
     super(
-        Entity.THESAURUS,
         ThesaurusResource.COLLECTION_PATH,
+        Entity.THESAURUS,
         Thesaurus.class,
         dao.thesaurusDAO(),
         dao,
