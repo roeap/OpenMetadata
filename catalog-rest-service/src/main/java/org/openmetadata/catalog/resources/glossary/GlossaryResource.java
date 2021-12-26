@@ -11,7 +11,7 @@
  *  limitations under the License.
  */
 
-package org.openmetadata.catalog.resources.thesauruses;
+package org.openmetadata.catalog.resources.glossary;
 
 import com.google.inject.Inject;
 import io.swagger.annotations.Api;
@@ -55,10 +55,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import org.openmetadata.catalog.Entity;
-import org.openmetadata.catalog.api.data.CreateThesaurus;
-import org.openmetadata.catalog.entity.data.Thesaurus;
+import org.openmetadata.catalog.api.data.CreateGlossary;
+import org.openmetadata.catalog.entity.data.Glossary;
 import org.openmetadata.catalog.jdbi3.CollectionDAO;
-import org.openmetadata.catalog.jdbi3.ThesaurusRepository;
+import org.openmetadata.catalog.jdbi3.GlossaryRepository;
 import org.openmetadata.catalog.resources.Collection;
 import org.openmetadata.catalog.security.CatalogAuthorizer;
 import org.openmetadata.catalog.security.SecurityUtil;
@@ -70,46 +70,46 @@ import org.openmetadata.catalog.util.RestUtil.PatchResponse;
 import org.openmetadata.catalog.util.RestUtil.PutResponse;
 import org.openmetadata.catalog.util.ResultList;
 
-@Path("/v1/thesauruses")
-@Api(value = "Thesauruses collection", tags = "Thesauruses collection")
+@Path("/v1/glossary")
+@Api(value = "Glossary collection", tags = "Glossary collection")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Collection(name = "thesauruses")
-public class ThesaurusResource {
-  public static final String COLLECTION_PATH = "v1/thesauruses/";
-  private final ThesaurusRepository dao;
+@Collection(name = "glossary")
+public class GlossaryResource {
+  public static final String COLLECTION_PATH = "v1/glossary/";
+  private final GlossaryRepository dao;
   private final CatalogAuthorizer authorizer;
 
   public static void addHref(UriInfo uriInfo, EntityReference ref) {
     ref.withHref(RestUtil.getHref(uriInfo, COLLECTION_PATH, ref.getId()));
   }
 
-  public static List<Thesaurus> addHref(UriInfo uriInfo, List<Thesaurus> thesauruses) {
-    Optional.ofNullable(thesauruses).orElse(Collections.emptyList()).forEach(i -> addHref(uriInfo, i));
-    return thesauruses;
+  public static List<Glossary> addHref(UriInfo uriInfo, List<Glossary> glossary) {
+    Optional.ofNullable(glossary).orElse(Collections.emptyList()).forEach(i -> addHref(uriInfo, i));
+    return glossary;
   }
 
-  public static Thesaurus addHref(UriInfo uriInfo, Thesaurus thesaurus) {
-    thesaurus.setHref(RestUtil.getHref(uriInfo, COLLECTION_PATH, thesaurus.getId()));
-    Entity.withHref(uriInfo, thesaurus.getOwner());
-    Entity.withHref(uriInfo, thesaurus.getFollowers());
-    return thesaurus;
+  public static Glossary addHref(UriInfo uriInfo, Glossary glossary) {
+    glossary.setHref(RestUtil.getHref(uriInfo, COLLECTION_PATH, glossary.getId()));
+    Entity.withHref(uriInfo, glossary.getOwner());
+    Entity.withHref(uriInfo, glossary.getFollowers());
+    return glossary;
   }
 
   @Inject
-  public ThesaurusResource(CollectionDAO dao, CatalogAuthorizer authorizer) {
-    Objects.requireNonNull(dao, "ThesaurusRepository must not be null");
-    this.dao = new ThesaurusRepository(dao);
+  public GlossaryResource(CollectionDAO dao, CatalogAuthorizer authorizer) {
+    Objects.requireNonNull(dao, "GlossaryRepository must not be null");
+    this.dao = new GlossaryRepository(dao);
     this.authorizer = authorizer;
   }
 
-  public static class ThesaurusList extends ResultList<Thesaurus> {
+  public static class GlossaryList extends ResultList<Glossary> {
     @SuppressWarnings("unused")
-    ThesaurusList() {
+    GlossaryList() {
       // Empty constructor needed for deserialization
     }
 
-    public ThesaurusList(List<Thesaurus> data, String beforeCursor, String afterCursor, int total)
+    public GlossaryList(List<Glossary> data, String beforeCursor, String afterCursor, int total)
         throws GeneralSecurityException, UnsupportedEncodingException {
       super(data, beforeCursor, afterCursor, total);
     }
@@ -121,19 +121,19 @@ public class ThesaurusResource {
   @GET
   @Valid
   @Operation(
-      summary = "List Thesauruses",
-      tags = "thesauruses",
+      summary = "List Glossary",
+      tags = "glossary",
       description =
-          "Get a list of thesauruses. Use `fields` parameter to get only necessary fields. "
+          "Get a list of glossary. Use `fields` parameter to get only necessary fields. "
               + " Use cursor-based pagination to limit the number "
               + "entries in the list using `limit` and `before` or `after` query params.",
       responses = {
         @ApiResponse(
             responseCode = "200",
-            description = "List of thesauruses",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ThesaurusList.class)))
+            description = "List of glossary",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = GlossaryList.class)))
       })
-  public ResultList<Thesaurus> list(
+  public ResultList<Glossary> list(
       @Context UriInfo uriInfo,
       @Context SecurityContext securityContext,
       @Parameter(
@@ -141,46 +141,46 @@ public class ThesaurusResource {
               schema = @Schema(type = "string", example = FIELDS))
           @QueryParam("fields")
           String fieldsParam,
-      @Parameter(description = "Limit the number thesauruses returned. (1 to 1000000, " + "default = 10)")
+      @Parameter(description = "Limit the number glossary returned. (1 to 1000000, " + "default = 10)")
           @DefaultValue("10")
           @Min(1)
           @Max(1000000)
           @QueryParam("limit")
           int limitParam,
-      @Parameter(description = "Returns list of thesauruses before this cursor", schema = @Schema(type = "string"))
+      @Parameter(description = "Returns list of glossary before this cursor", schema = @Schema(type = "string"))
           @QueryParam("before")
           String before,
-      @Parameter(description = "Returns list of thesauruses after this cursor", schema = @Schema(type = "string"))
+      @Parameter(description = "Returns list of glossary after this cursor", schema = @Schema(type = "string"))
           @QueryParam("after")
           String after)
       throws IOException, GeneralSecurityException, ParseException {
     RestUtil.validateCursors(before, after);
     Fields fields = new Fields(FIELD_LIST, fieldsParam);
 
-    ResultList<Thesaurus> thesauruses;
+    ResultList<Glossary> glossary;
     if (before != null) { // Reverse paging
-      thesauruses = dao.listBefore(uriInfo, fields, null, limitParam, before); // Ask for one extra entry
+      glossary = dao.listBefore(uriInfo, fields, null, limitParam, before); // Ask for one extra entry
     } else { // Forward paging or first page
-      thesauruses = dao.listAfter(uriInfo, fields, null, limitParam, after);
+      glossary = dao.listAfter(uriInfo, fields, null, limitParam, after);
     }
-    addHref(uriInfo, thesauruses.getData());
-    return thesauruses;
+    addHref(uriInfo, glossary.getData());
+    return glossary;
   }
 
   @GET
   @Path("/{id}")
   @Operation(
-      summary = "Get a thesaurus",
-      tags = "thesauruses",
-      description = "Get a thesaurus by `id`.",
+      summary = "Get a glossary",
+      tags = "glossary",
+      description = "Get a glossary by `id`.",
       responses = {
         @ApiResponse(
             responseCode = "200",
-            description = "The thesaurus",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Thesaurus.class))),
-        @ApiResponse(responseCode = "404", description = "Thesaurus for instance {id} is not found")
+            description = "The glossary",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Glossary.class))),
+        @ApiResponse(responseCode = "404", description = "Glossary for instance {id} is not found")
       })
-  public Thesaurus get(
+  public Glossary get(
       @Context UriInfo uriInfo,
       @Context SecurityContext securityContext,
       @PathParam("id") String id,
@@ -197,17 +197,17 @@ public class ThesaurusResource {
   @GET
   @Path("/name/{fqn}")
   @Operation(
-      summary = "Get a thesaurus by name",
-      tags = "thesauruses",
-      description = "Get a thesaurus by fully qualified name.",
+      summary = "Get a glossary by name",
+      tags = "glossary",
+      description = "Get a glossary by fully qualified name.",
       responses = {
         @ApiResponse(
             responseCode = "200",
-            description = "The thesaurus",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Thesaurus.class))),
-        @ApiResponse(responseCode = "404", description = "Thesaurus for instance {id} is not found")
+            description = "The glossary",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Glossary.class))),
+        @ApiResponse(responseCode = "404", description = "Glossary for instance {id} is not found")
       })
-  public Thesaurus getByName(
+  public Glossary getByName(
       @Context UriInfo uriInfo,
       @PathParam("fqn") String fqn,
       @Context SecurityContext securityContext,
@@ -218,86 +218,86 @@ public class ThesaurusResource {
           String fieldsParam)
       throws IOException, ParseException {
     Fields fields = new Fields(FIELD_LIST, fieldsParam);
-    Thesaurus thesaurus = dao.getByName(uriInfo, fqn, fields);
-    return addHref(uriInfo, thesaurus);
+    Glossary glossary = dao.getByName(uriInfo, fqn, fields);
+    return addHref(uriInfo, glossary);
   }
 
   @GET
   @Path("/{id}/versions")
   @Operation(
-          summary = "List thesaurus versions",
-          tags = "thesauruses",
-          description = "Get a list of all the versions of a thesaurus identified by `id`",
-          responses = {
-                  @ApiResponse(
-                          responseCode = "200",
-                          description = "List of thesaurus versions",
-                          content = @Content(mediaType = "application/json", schema = @Schema(implementation = EntityHistory.class)))
-          })
+      summary = "List glossary versions",
+      tags = "glossary",
+      description = "Get a list of all the versions of a glossary identified by `id`",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "List of glossary versions",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = EntityHistory.class)))
+      })
   public EntityHistory listVersions(
-          @Context UriInfo uriInfo,
-          @Context SecurityContext securityContext,
-          @Parameter(description = "thesaurus Id", schema = @Schema(type = "string")) @PathParam("id") String id)
-          throws IOException, ParseException {
+      @Context UriInfo uriInfo,
+      @Context SecurityContext securityContext,
+      @Parameter(description = "glossary Id", schema = @Schema(type = "string")) @PathParam("id") String id)
+      throws IOException, ParseException {
     return dao.listVersions(id);
   }
 
   @GET
   @Path("/{id}/versions/{version}")
   @Operation(
-          summary = "Get a version of the thesaurus",
-          tags = "thesauruses",
-          description = "Get a version of the thesaurus by given `id`",
-          responses = {
-                  @ApiResponse(
-                          responseCode = "200",
-                          description = "thesaurus",
-                          content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                                  Thesaurus.class))),
-                  @ApiResponse(
-                          responseCode = "404",
-                          description = "Thesaurus for instance {id} and version {version} is " + "not found")
-          })
-  public Thesaurus getVersion(
-          @Context UriInfo uriInfo,
-          @Context SecurityContext securityContext,
-          @Parameter(description = "thesaurus Id", schema = @Schema(type = "string")) @PathParam("id") String id,
-          @Parameter(
-                  description = "thesaurus version number in the form `major`.`minor`",
-                  schema = @Schema(type = "string", example = "0.1 or 1.1"))
-          @PathParam("version")
-                  String version)
-          throws IOException, ParseException {
-    return dao.getVersion(id, version);
-  }
-  @POST
-  @Operation(
-      summary = "Create a thesaurus",
-      tags = "thesauruses",
-      description = "Create a new thesaurus.",
+      summary = "Get a version of the glossary",
+      tags = "glossary",
+      description = "Get a version of the glossary by given `id`",
       responses = {
         @ApiResponse(
             responseCode = "200",
-            description = "The thesaurus",
+            description = "glossary",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Glossary.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Glossary for instance {id} and version {version} is " + "not found")
+      })
+  public Glossary getVersion(
+      @Context UriInfo uriInfo,
+      @Context SecurityContext securityContext,
+      @Parameter(description = "glossary Id", schema = @Schema(type = "string")) @PathParam("id") String id,
+      @Parameter(
+              description = "glossary version number in the form `major`.`minor`",
+              schema = @Schema(type = "string", example = "0.1 or 1.1"))
+          @PathParam("version")
+          String version)
+      throws IOException, ParseException {
+    return dao.getVersion(id, version);
+  }
+
+  @POST
+  @Operation(
+      summary = "Create a glossary",
+      tags = "glossary",
+      description = "Create a new glossary.",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "The glossary",
             content =
-                @Content(mediaType = "application/json", schema = @Schema(implementation = CreateThesaurus.class))),
+                @Content(mediaType = "application/json", schema = @Schema(implementation = CreateGlossary.class))),
         @ApiResponse(responseCode = "400", description = "Bad request")
       })
   public Response create(
-      @Context UriInfo uriInfo, @Context SecurityContext securityContext, @Valid CreateThesaurus create)
+      @Context UriInfo uriInfo, @Context SecurityContext securityContext, @Valid CreateGlossary create)
       throws IOException, ParseException {
     SecurityUtil.checkAdminOrBotRole(authorizer, securityContext);
-    Thesaurus thesaurus = getThesaurus(securityContext, create);
-    thesaurus = addHref(uriInfo, dao.create(uriInfo, thesaurus));
-    return Response.created(thesaurus.getHref()).entity(thesaurus).build();
+    Glossary glossary = getGlossary(securityContext, create);
+    glossary = addHref(uriInfo, dao.create(uriInfo, glossary));
+    return Response.created(glossary.getHref()).entity(glossary).build();
   }
 
   @PATCH
   @Path("/{id}")
   @Operation(
-      summary = "Update a thesaurus",
-      tags = "thesauruses",
-      description = "Update an existing thesaurus using JsonPatch.",
+      summary = "Update a glossary",
+      tags = "glossary",
+      description = "Update an existing glossary using JsonPatch.",
       externalDocs = @ExternalDocumentation(description = "JsonPatch RFC", url = "https://tools.ietf.org/html/rfc6902"))
   @Consumes(MediaType.APPLICATION_JSON_PATCH_JSON)
   public Response updateDescription(
@@ -315,9 +315,9 @@ public class ThesaurusResource {
           JsonPatch patch)
       throws IOException, ParseException {
     Fields fields = new Fields(FIELD_LIST, FIELDS);
-    Thesaurus thesaurus = dao.get(uriInfo, id, fields);
-    SecurityUtil.checkAdminRoleOrPermissions(authorizer, securityContext, dao.getOwnerReference(thesaurus));
-    PatchResponse<Thesaurus> response =
+    Glossary glossary = dao.get(uriInfo, id, fields);
+    SecurityUtil.checkAdminRoleOrPermissions(authorizer, securityContext, dao.getOwnerReference(glossary));
+    PatchResponse<Glossary> response =
         dao.patch(uriInfo, UUID.fromString(id), securityContext.getUserPrincipal().getName(), patch);
     addHref(uriInfo, response.getEntity());
     return response.toResponse();
@@ -325,21 +325,21 @@ public class ThesaurusResource {
 
   @PUT
   @Operation(
-      summary = "Create or update a thesaurus",
-      tags = "thesauruses",
-      description = "Create a new thesaurus, if it does not exist or update an existing thesaurus.",
+      summary = "Create or update a glossary",
+      tags = "glossary",
+      description = "Create a new glossary, if it does not exist or update an existing glossary.",
       responses = {
         @ApiResponse(
             responseCode = "200",
-            description = "The thesaurus",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Thesaurus.class))),
+            description = "The glossary",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Glossary.class))),
         @ApiResponse(responseCode = "400", description = "Bad request")
       })
   public Response createOrUpdate(
-      @Context UriInfo uriInfo, @Context SecurityContext securityContext, @Valid CreateThesaurus create)
+      @Context UriInfo uriInfo, @Context SecurityContext securityContext, @Valid CreateGlossary create)
       throws IOException, ParseException {
-    Thesaurus thesaurus = getThesaurus(securityContext, create);
-    PutResponse<Thesaurus> response = dao.createOrUpdate(uriInfo, thesaurus);
+    Glossary glossary = getGlossary(securityContext, create);
+    PutResponse<Glossary> response = dao.createOrUpdate(uriInfo, glossary);
     addHref(uriInfo, response.getEntity());
     return response.toResponse();
   }
@@ -348,16 +348,16 @@ public class ThesaurusResource {
   @Path("/{id}/followers")
   @Operation(
       summary = "Add a follower",
-      tags = "thesauruses",
-      description = "Add a user identified by `userId` as follower of this thesaurus",
+      tags = "glossary",
+      description = "Add a user identified by `userId` as follower of this glossary",
       responses = {
         @ApiResponse(responseCode = "200", description = "OK"),
-        @ApiResponse(responseCode = "404", description = "thesaurus for instance {id} is not found")
+        @ApiResponse(responseCode = "404", description = "glossary for instance {id} is not found")
       })
   public Response addFollower(
       @Context UriInfo uriInfo,
       @Context SecurityContext securityContext,
-      @Parameter(description = "Id of the thesaurus", schema = @Schema(type = "string")) @PathParam("id") String id,
+      @Parameter(description = "Id of the glossary", schema = @Schema(type = "string")) @PathParam("id") String id,
       @Parameter(description = "Id of the user to be added as follower", schema = @Schema(type = "string"))
           String userId)
       throws IOException, ParseException {
@@ -369,12 +369,12 @@ public class ThesaurusResource {
   @Path("/{id}/followers/{userId}")
   @Operation(
       summary = "Remove a follower",
-      tags = "thesauruses",
-      description = "Remove the user identified `userId` as a follower of the thesaurus.")
+      tags = "glossary",
+      description = "Remove the user identified `userId` as a follower of the glossary.")
   public Response deleteFollower(
       @Context UriInfo uriInfo,
       @Context SecurityContext securityContext,
-      @Parameter(description = "Id of the thesaurus", schema = @Schema(type = "string")) @PathParam("id") String id,
+      @Parameter(description = "Id of the glossary", schema = @Schema(type = "string")) @PathParam("id") String id,
       @Parameter(description = "Id of the user being removed as follower", schema = @Schema(type = "string"))
           @PathParam("userId")
           String userId)
@@ -387,20 +387,20 @@ public class ThesaurusResource {
   @DELETE
   @Path("/{id}")
   @Operation(
-      summary = "Delete a Thesaurus",
-      tags = "thesauruses",
-      description = "Delete a thesaurus by `id`.",
+      summary = "Delete a Glossary",
+      tags = "glossary",
+      description = "Delete a glossary by `id`.",
       responses = {
         @ApiResponse(responseCode = "200", description = "OK"),
-        @ApiResponse(responseCode = "404", description = "thesaurus for instance {id} is not found")
+        @ApiResponse(responseCode = "404", description = "glossary for instance {id} is not found")
       })
   public Response delete(@Context UriInfo uriInfo, @PathParam("id") String id) {
     dao.delete(UUID.fromString(id));
     return Response.ok().build();
   }
 
-  private Thesaurus getThesaurus(SecurityContext securityContext, CreateThesaurus create) {
-    return new Thesaurus()
+  private Glossary getGlossary(SecurityContext securityContext, CreateGlossary create) {
+    return new Glossary()
         .withId(UUID.randomUUID())
         .withName(create.getName())
         .withDisplayName(create.getDisplayName())

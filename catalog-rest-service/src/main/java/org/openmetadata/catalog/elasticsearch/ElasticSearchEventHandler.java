@@ -38,9 +38,9 @@ import org.openmetadata.catalog.ElasticSearchConfiguration;
 import org.openmetadata.catalog.Entity;
 import org.openmetadata.catalog.elasticsearch.ElasticSearchIndexDefinition.ElasticSearchIndexType;
 import org.openmetadata.catalog.entity.data.Dashboard;
+import org.openmetadata.catalog.entity.data.Glossary;
 import org.openmetadata.catalog.entity.data.Pipeline;
 import org.openmetadata.catalog.entity.data.Table;
-import org.openmetadata.catalog.entity.data.Thesaurus;
 import org.openmetadata.catalog.entity.data.Topic;
 import org.openmetadata.catalog.events.EventHandler;
 import org.openmetadata.catalog.type.ChangeDescription;
@@ -108,11 +108,11 @@ public class ElasticSearchEventHandler implements EventHandler {
             Pipeline instance = (Pipeline) entity;
             updateRequest = updatePipeline(instance, responseContext);
           }
-        } else if (entityClass.toLowerCase().endsWith(Entity.THESAURUS.toLowerCase())) {
-          boolean exists = esIndexDefinition.checkIndexExistsOrCreate(ElasticSearchIndexType.THESAURUS_SEARCH_INDEX);
+        } else if (entityClass.toLowerCase().endsWith(Entity.GLOSSARY.toLowerCase())) {
+          boolean exists = esIndexDefinition.checkIndexExistsOrCreate(ElasticSearchIndexType.GLOSSARY_SEARCH_INDEX);
           if (exists) {
-            Thesaurus instance = (Thesaurus) entity;
-            updateRequest = updateThesaurus(instance, responseContext);
+            Glossary instance = (Glossary) entity;
+            updateRequest = updateGlossary(instance, responseContext);
           }
         } else if (entityClass.toLowerCase().equalsIgnoreCase(ChangeEvent.class.toString())) {
           ChangeEvent changeEvent = (ChangeEvent) entity;
@@ -245,12 +245,12 @@ public class ElasticSearchEventHandler implements EventHandler {
     return updateRequest;
   }
 
-  private UpdateRequest updateThesaurus(Thesaurus instance, ContainerResponseContext responseContext)
+  private UpdateRequest updateGlossary(Glossary instance, ContainerResponseContext responseContext)
       throws JsonProcessingException {
     int responseCode = responseContext.getStatus();
-    ThesaurusESIndex esIndex = ThesaurusESIndex.builder(instance, responseCode).build();
+    GlossaryESIndex esIndex = GlossaryESIndex.builder(instance, responseCode).build();
     UpdateRequest updateRequest =
-        new UpdateRequest(ElasticSearchIndexType.THESAURUS_SEARCH_INDEX.indexName, instance.getId().toString());
+        new UpdateRequest(ElasticSearchIndexType.GLOSSARY_SEARCH_INDEX.indexName, instance.getId().toString());
     if (responseCode != Response.Status.CREATED.getStatusCode()) {
       scriptedUpsert(esIndex, updateRequest);
     } else {

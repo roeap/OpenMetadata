@@ -142,8 +142,8 @@ public class SearchResource {
       case "table_search_index":
         searchSourceBuilder = buildTableSearchBuilder(query, from, size);
         break;
-      case "thesaurus_search_index":
-        searchSourceBuilder = buildThesaurusSearchBuilder(query, from, size);
+      case "glossary_search_index":
+        searchSourceBuilder = buildGlossarySearchBuilder(query, from, size);
         break;
       default:
         searchSourceBuilder = buildAggregateSearchBuilder(query, from, size);
@@ -353,19 +353,19 @@ public class SearchResource {
     return searchSourceBuilder;
   }
 
-  private SearchSourceBuilder buildThesaurusSearchBuilder(String query, int from, int size) {
+  private SearchSourceBuilder buildGlossarySearchBuilder(String query, int from, int size) {
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-    HighlightBuilder.Field highlightThesaurusName = new HighlightBuilder.Field("thesaurus_name");
-    highlightThesaurusName.highlighterType("unified");
+    HighlightBuilder.Field highlightGlossaryName = new HighlightBuilder.Field("glossary_name");
+    highlightGlossaryName.highlighterType("unified");
     HighlightBuilder.Field highlightDescription = new HighlightBuilder.Field("description");
     highlightDescription.highlighterType("unified");
     HighlightBuilder hb = new HighlightBuilder();
     hb.field(highlightDescription);
-    hb.field(highlightThesaurusName);
+    hb.field(highlightGlossaryName);
     hb.preTags("<span class=\"text-highlighter\">");
     hb.postTags("</span>");
     searchSourceBuilder
-        .query(QueryBuilders.queryStringQuery(query).field("thesaurus_name", 5.0f).field("description").lenient(true))
+        .query(QueryBuilders.queryStringQuery(query).field("glossary_name", 5.0f).field("description").lenient(true))
         .aggregation(AggregationBuilders.terms("EntityType").field("entity_type"))
         .aggregation(AggregationBuilders.terms("Tier").field("tier"))
         .aggregation(AggregationBuilders.terms("Tags").field("tags"))

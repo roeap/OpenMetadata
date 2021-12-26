@@ -101,9 +101,9 @@ const MyAssetStats: FunctionComponent<Props> = ({
       },
       thesaureses: {
         icon: Icons.TERMS,
-        data: `${entityCounts.thesaurusCount} Thesauruses`,
-        link: `/explore/thesauruses`,
-        dataTestId: 'thesauruses',
+        data: `${entityCounts.glossaryCount} Glossary`,
+        link: `/explore/glossary`,
+        dataTestId: 'glossary',
       },
     };
   };

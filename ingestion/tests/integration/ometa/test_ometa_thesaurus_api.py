@@ -1,14 +1,14 @@
 """
-OpenMetadata high-level API Thesaurus test
+OpenMetadata high-level API Glossary test
 """
 import uuid
 from unittest import TestCase
 
-from metadata.generated.schema.api.data.createThesaurus import (
-    CreateThesaurusEntityRequest,
+from metadata.generated.schema.api.data.createGlossary import (
+    CreateGlossaryEntityRequest,
 )
 from metadata.generated.schema.api.teams.createUser import CreateUserEntityRequest
-from metadata.generated.schema.entity.data.thesaurus import Thesaurus
+from metadata.generated.schema.entity.data.glossary import Glossary
 from metadata.generated.schema.type.entityReference import EntityReference
 from metadata.ingestion.ometa.ometa_api import OpenMetadata
 from metadata.ingestion.ometa.openmetadata_rest import MetadataServerConfig
@@ -30,13 +30,13 @@ class OMetaModelTest(TestCase):
     )
     owner = EntityReference(id=user.id, type="user")
 
-    entity = Thesaurus(
+    entity = Glossary(
         id=uuid.uuid4(),
-        name="test-thesaurus",
+        name="test-glossary",
         skos="TEST SKOS",
-        fullyQualifiedName="test-thesaurus",
+        fullyQualifiedName="test-glossary",
     )
-    create = CreateThesaurusEntityRequest(name="test-thesaurus", skos="TEST SKOS")
+    create = CreateGlossaryEntityRequest(name="test-glossary", skos="TEST SKOS")
 
     def test_create(self):
         """
@@ -58,7 +58,7 @@ class OMetaModelTest(TestCase):
 
         updated = self.create.dict(exclude_unset=True)
         updated["owner"] = self.owner
-        updated_entity = CreateThesaurusEntityRequest(**updated)
+        updated_entity = CreateGlossaryEntityRequest(**updated)
 
         res = self.metadata.create_or_update(data=updated_entity)
 
@@ -69,13 +69,13 @@ class OMetaModelTest(TestCase):
 
         # Getting without owner field does not return it by default
         res_none = self.metadata.get_by_name(
-            entity=Thesaurus, fqdn=self.entity.fullyQualifiedName
+            entity=Glossary, fqdn=self.entity.fullyQualifiedName
         )
         self.assertIsNone(res_none.owner)
 
         # We can request specific fields to be added
         res_owner = self.metadata.get_by_name(
-            entity=Thesaurus,
+            entity=Glossary,
             fqdn=self.entity.fullyQualifiedName,
             fields=["owner", "followers"],
         )
@@ -89,7 +89,7 @@ class OMetaModelTest(TestCase):
         self.metadata.create_or_update(data=self.create)
 
         res = self.metadata.get_by_name(
-            entity=Thesaurus, fqdn=self.entity.fullyQualifiedName
+            entity=Glossary, fqdn=self.entity.fullyQualifiedName
         )
         self.assertEqual(res.name, self.entity.name)
 
@@ -102,11 +102,11 @@ class OMetaModelTest(TestCase):
 
         # First pick up by name
         res_name = self.metadata.get_by_name(
-            entity=Thesaurus, fqdn=self.entity.fullyQualifiedName
+            entity=Glossary, fqdn=self.entity.fullyQualifiedName
         )
         # Then fetch by ID
         res = self.metadata.get_by_id(
-            entity=Thesaurus, entity_id=str(res_name.id.__root__)
+            entity=Glossary, entity_id=str(res_name.id.__root__)
         )
 
         self.assertEqual(res_name.id, res.id)
@@ -118,7 +118,7 @@ class OMetaModelTest(TestCase):
 
         self.metadata.create_or_update(data=self.create)
 
-        res = self.metadata.list_entities(entity=Thesaurus)
+        res = self.metadata.list_entities(entity=Glossary)
 
         # Fetch our test model. We have already inserted it, so we should find it
         data = next(
@@ -135,18 +135,18 @@ class OMetaModelTest(TestCase):
 
         # Find by name
         res_name = self.metadata.get_by_name(
-            entity=Thesaurus, fqdn=self.entity.fullyQualifiedName
+            entity=Glossary, fqdn=self.entity.fullyQualifiedName
         )
         # Then fetch by ID
         res_id = self.metadata.get_by_id(
-            entity=Thesaurus, entity_id=str(res_name.id.__root__)
+            entity=Glossary, entity_id=str(res_name.id.__root__)
         )
 
         # Delete
-        self.metadata.delete(entity=Thesaurus, entity_id=str(res_id.id.__root__))
+        self.metadata.delete(entity=Glossary, entity_id=str(res_id.id.__root__))
 
         # Then we should not find it
-        res = self.metadata.list_entities(entity=Thesaurus)
+        res = self.metadata.list_entities(entity=Glossary)
 
         assert not next(
             iter(
@@ -159,12 +159,12 @@ class OMetaModelTest(TestCase):
 
     def test_model_properties(self):
         """
-        Check that we can create thesauruses
+        Check that we can create glossary
         """
 
-        thesaurus = CreateThesaurusEntityRequest(
-            name="test-thesaurus",
+        glossary = CreateGlossaryEntityRequest(
+            name="test-glossary",
             skos="TEST SKOS",
         )
 
-        res = self.metadata.create_or_update(data=thesaurus)
+        res = self.metadata.create_or_update(data=glossary)

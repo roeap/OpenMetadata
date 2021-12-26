@@ -89,12 +89,12 @@ class TopicESDocument(BaseModel):
     doc_as_upsert: bool = True
 
 
-class ThesaurusESDocument(BaseModel):
-    """Thesaurus Elastic Search Mapping doc"""
+class GlossaryESDocument(BaseModel):
+    """Glossary Elastic Search Mapping doc"""
 
-    thesaurus_id: str
-    thesaurus_name: str
-    entity_type: str = "thesaurus"
+    glossary_id: str
+    glossary_name: str
+    entity_type: str = "glossary"
     suggest: List[dict]
     description: Optional[str] = None
     last_updated_timestamp: Optional[int]

@@ -31,9 +31,9 @@ import org.elasticsearch.client.indices.PutMappingRequest;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.openmetadata.catalog.Entity;
 import org.openmetadata.catalog.entity.data.Dashboard;
+import org.openmetadata.catalog.entity.data.Glossary;
 import org.openmetadata.catalog.entity.data.Pipeline;
 import org.openmetadata.catalog.entity.data.Table;
-import org.openmetadata.catalog.entity.data.Thesaurus;
 import org.openmetadata.catalog.entity.data.Topic;
 import org.openmetadata.catalog.type.Column;
 import org.openmetadata.catalog.type.EntityReference;
@@ -66,7 +66,7 @@ public class ElasticSearchIndexDefinition {
     TOPIC_SEARCH_INDEX("topic_search_index", "/elasticsearch/topic_index_mapping.json"),
     DASHBOARD_SEARCH_INDEX("dashboard_search_index", "/elasticsearch/dashboard_index_mapping.json"),
     PIPELINE_SEARCH_INDEX("pipeline_search_index", "/elasticsearch/pipeline_index_mapping.json"),
-    THESAURUS_SEARCH_INDEX("thesaurus_search_index", "/elasticsearch/thesaurus_index_mapping.json");
+    GLOSSARY_SEARCH_INDEX("glossary_search_index", "/elasticsearch/glossary_index_mapping.json");
 
     public final String indexName;
     public final String indexMappingFile;
@@ -193,7 +193,7 @@ public class ElasticSearchIndexDefinition {
     } else if (type.equalsIgnoreCase(Entity.TOPIC)) {
       return ElasticSearchIndexType.TOPIC_SEARCH_INDEX;
     } else if (type.equalsIgnoreCase(Entity.TOPIC)) {
-      return ElasticSearchIndexType.THESAURUS_SEARCH_INDEX;
+      return ElasticSearchIndexType.GLOSSARY_SEARCH_INDEX;
     }
     throw new RuntimeException("Failed to find index doc for type " + type);
   }
@@ -713,60 +713,60 @@ class PipelineESIndex extends ElasticSearchIndex {
 @SuperBuilder(builderMethodName = "internalBuilder")
 @Value
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class ThesaurusESIndex extends ElasticSearchIndex {
-  @JsonProperty("thesaurus_id")
-  String thesaurusId;
+class GlossaryESIndex extends ElasticSearchIndex {
+  @JsonProperty("glossary_id")
+  String glossaryId;
 
-  public static ThesaurusESIndexBuilder builder(Thesaurus thesaurus, int responseCode) {
+  public static GlossaryESIndexBuilder builder(Glossary glossary, int responseCode) {
     List<String> tags = new ArrayList<>();
     List<String> taskNames = new ArrayList<>();
     List<String> taskDescriptions = new ArrayList<>();
     List<ElasticSearchSuggest> suggest = new ArrayList<>();
-    suggest.add(ElasticSearchSuggest.builder().input(thesaurus.getFullyQualifiedName()).weight(5).build());
-    suggest.add(ElasticSearchSuggest.builder().input(thesaurus.getDisplayName()).weight(10).build());
+    suggest.add(ElasticSearchSuggest.builder().input(glossary.getFullyQualifiedName()).weight(5).build());
+    suggest.add(ElasticSearchSuggest.builder().input(glossary.getDisplayName()).weight(10).build());
 
-    if (thesaurus.getTags() != null) {
-      thesaurus.getTags().forEach(tag -> tags.add(tag.getTagFQN()));
+    if (glossary.getTags() != null) {
+      glossary.getTags().forEach(tag -> tags.add(tag.getTagFQN()));
     }
 
-    Long updatedTimestamp = thesaurus.getUpdatedAt().getTime();
+    Long updatedTimestamp = glossary.getUpdatedAt().getTime();
     ParseTags parseTags = new ParseTags(tags);
-    String description = thesaurus.getDescription() != null ? thesaurus.getDescription() : "";
-    String displayName = thesaurus.getDisplayName() != null ? thesaurus.getDisplayName() : "";
-    ThesaurusESIndexBuilder builder =
+    String description = glossary.getDescription() != null ? glossary.getDescription() : "";
+    String displayName = glossary.getDisplayName() != null ? glossary.getDisplayName() : "";
+    GlossaryESIndexBuilder builder =
         internalBuilder()
-            .thesaurusId(thesaurus.getId().toString())
-            .name(thesaurus.getDisplayName())
+            .glossaryId(glossary.getId().toString())
+            .name(glossary.getDisplayName())
             .displayName(description)
             .description(displayName)
-            .fqdn(thesaurus.getFullyQualifiedName())
+            .fqdn(glossary.getFullyQualifiedName())
             .lastUpdatedTimestamp(updatedTimestamp)
-            .entityType("thesaurus")
+            .entityType("glossary")
             .suggest(suggest)
             .tags(parseTags.tags)
             .tier(parseTags.tierTag);
 
-    if (thesaurus.getFollowers() != null) {
+    if (glossary.getFollowers() != null) {
       builder.followers(
-          thesaurus.getFollowers().stream().map(item -> item.getId().toString()).collect(Collectors.toList()));
+          glossary.getFollowers().stream().map(item -> item.getId().toString()).collect(Collectors.toList()));
     } else if (responseCode == Response.Status.CREATED.getStatusCode()) {
       builder.followers(Collections.emptyList());
     }
 
-    if (thesaurus.getOwner() != null) {
-      builder.owner(thesaurus.getOwner().getId().toString());
+    if (glossary.getOwner() != null) {
+      builder.owner(glossary.getOwner().getId().toString());
     }
 
     ESChangeDescription esChangeDescription = null;
-    if (thesaurus.getChangeDescription() != null) {
+    if (glossary.getChangeDescription() != null) {
       esChangeDescription =
-          ESChangeDescription.builder().updatedAt(updatedTimestamp).updatedBy(thesaurus.getUpdatedBy()).build();
-      esChangeDescription.setFieldsAdded(thesaurus.getChangeDescription().getFieldsAdded());
-      esChangeDescription.setFieldsDeleted(thesaurus.getChangeDescription().getFieldsDeleted());
-      esChangeDescription.setFieldsUpdated(thesaurus.getChangeDescription().getFieldsUpdated());
+          ESChangeDescription.builder().updatedAt(updatedTimestamp).updatedBy(glossary.getUpdatedBy()).build();
+      esChangeDescription.setFieldsAdded(glossary.getChangeDescription().getFieldsAdded());
+      esChangeDescription.setFieldsDeleted(glossary.getChangeDescription().getFieldsDeleted());
+      esChangeDescription.setFieldsUpdated(glossary.getChangeDescription().getFieldsUpdated());
     } else if (responseCode == Response.Status.CREATED.getStatusCode()) {
       esChangeDescription =
-          ESChangeDescription.builder().updatedAt(updatedTimestamp).updatedBy(thesaurus.getUpdatedBy()).build();
+          ESChangeDescription.builder().updatedAt(updatedTimestamp).updatedBy(glossary.getUpdatedBy()).build();
     }
     builder.changeDescriptions(esChangeDescription != null ? List.of(esChangeDescription) : null);
     return builder;
