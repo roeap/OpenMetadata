@@ -53,7 +53,7 @@ public class GlossaryResourceTest extends EntityResourceTest<Glossary> {
         GlossaryResource.GlossaryList.class,
         "glossary",
         GlossaryResource.FIELDS,
-        true,
+        false,
         true,
         true);
   }
