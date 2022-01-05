@@ -16,8 +16,6 @@
 
 package org.openmetadata.catalog.jdbi3;
 
-import static org.openmetadata.catalog.exception.CatalogExceptionMessage.entityNotFound;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
@@ -26,7 +24,6 @@ import java.util.UUID;
 import org.jdbi.v3.sqlobject.transaction.Transaction;
 import org.openmetadata.catalog.Entity;
 import org.openmetadata.catalog.entity.data.Glossary;
-import org.openmetadata.catalog.exception.EntityNotFoundException;
 import org.openmetadata.catalog.resources.glossary.GlossaryResource;
 import org.openmetadata.catalog.type.ChangeDescription;
 import org.openmetadata.catalog.type.EntityReference;
@@ -35,11 +32,8 @@ import org.openmetadata.catalog.util.EntityInterface;
 import org.openmetadata.catalog.util.EntityUtil;
 import org.openmetadata.catalog.util.EntityUtil.Fields;
 import org.openmetadata.catalog.util.JsonUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GlossaryRepository extends EntityRepository<Glossary> {
-  private static final Logger LOG = LoggerFactory.getLogger(GlossaryRepository.class);
   private static final Fields GLOSSARY_UPDATE_FIELDS = new Fields(GlossaryResource.FIELD_LIST, "owner,tags");
   private static final Fields GLOSSARY_PATCH_FIELDS = new Fields(GlossaryResource.FIELD_LIST, "owner,tags");
   private final CollectionDAO dao;
@@ -52,23 +46,15 @@ public class GlossaryRepository extends EntityRepository<Glossary> {
         dao.glossaryDAO(),
         dao,
         GLOSSARY_PATCH_FIELDS,
-        GLOSSARY_UPDATE_FIELDS);
+        GLOSSARY_UPDATE_FIELDS,
+        true,
+        true,
+        false);
     this.dao = dao;
   }
 
   public static String getFQN(Glossary glossary) {
     return (glossary.getName());
-  }
-
-  @Transaction
-  public void delete(UUID id) {
-    if (dao.relationshipDAO().findToCount(id.toString(), Relationship.CONTAINS.ordinal(), Entity.GLOSSARY) > 0) {
-      throw new IllegalArgumentException("Glossary is not empty");
-    }
-    if (dao.glossaryDAO().delete(id) <= 0) {
-      throw EntityNotFoundException.byMessage(entityNotFound(Entity.GLOSSARY, id));
-    }
-    dao.relationshipDAO().deleteAll(id.toString());
   }
 
   @Transaction
@@ -121,10 +107,6 @@ public class GlossaryRepository extends EntityRepository<Glossary> {
     return new GlossaryEntityInterface(entity);
   }
 
-  private List<TagLabel> getTags(String fqn) {
-    return dao.tagDAO().getTags(fqn);
-  }
-
   @Override
   public void storeRelationships(Glossary glossary) {
     setOwner(glossary, glossary.getOwner());
@@ -134,27 +116,6 @@ public class GlossaryRepository extends EntityRepository<Glossary> {
   @Override
   public EntityUpdater getUpdater(Glossary original, Glossary updated, boolean patchOperation) {
     return new GlossaryUpdater(original, updated, patchOperation);
-  }
-
-  private EntityReference getOwner(Glossary glossary) throws IOException {
-    return glossary == null
-        ? null
-        : EntityUtil.populateOwner(glossary.getId(), dao.relationshipDAO(), dao.userDAO(), dao.teamDAO());
-  }
-
-  public void setOwner(Glossary glossary, EntityReference owner) {
-    EntityUtil.setOwner(dao.relationshipDAO(), glossary.getId(), Entity.GLOSSARY, owner);
-    glossary.setOwner(owner);
-  }
-
-  private void applyTags(Glossary glossary) {
-    // Add glossary level tags by adding tag to glossary relationship
-    EntityUtil.applyTags(dao.tagDAO(), glossary.getTags(), glossary.getFullyQualifiedName());
-    glossary.setTags(getTags(glossary.getFullyQualifiedName())); // Update tag to handle additional derived tags
-  }
-
-  private List<EntityReference> getFollowers(Glossary glossary) throws IOException {
-    return glossary == null ? null : EntityUtil.getFollowers(glossary.getId(), dao.relationshipDAO(), dao.userDAO());
   }
 
   public static class GlossaryEntityInterface implements EntityInterface<Glossary> {
@@ -244,6 +205,11 @@ public class GlossaryRepository extends EntityRepository<Glossary> {
     }
 
     @Override
+    public EntityReference getContainer() {
+      return null;
+    }
+
+    @Override
     public void setId(UUID id) {
       entity.setId(id);
     }
@@ -273,6 +239,11 @@ public class GlossaryRepository extends EntityRepository<Glossary> {
     @Override
     public void setOwner(EntityReference owner) {
       entity.setOwner(owner);
+    }
+
+    @Override
+    public void setDeleted(boolean flag) {
+      entity.setDeleted(flag);
     }
 
     @Override

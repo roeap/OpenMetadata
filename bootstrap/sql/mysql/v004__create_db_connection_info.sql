@@ -17,6 +17,7 @@ ADD INDEX (deleted);
 CREATE TABLE IF NOT EXISTS glossary_entity (
     id VARCHAR(36) GENERATED ALWAYS AS (json ->> '$.id') STORED NOT NULL,
     fullyQualifiedName VARCHAR(256) GENERATED ALWAYS AS (json ->> '$.fullyQualifiedName') NOT NULL,
+    deleted BOOLEAN GENERATED ALWAYS AS (JSON_EXTRACT(json, '$.deleted')),
     json JSON NOT NULL,
     updatedAt TIMESTAMP GENERATED ALWAYS AS (TIMESTAMP(STR_TO_DATE(json ->> '$.updatedAt', '%Y-%m-%dT%T.%fZ'))) NOT NULL,
     updatedBy VARCHAR(256) GENERATED ALWAYS AS (json ->> '$.updatedBy') NOT NULL,

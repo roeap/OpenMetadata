@@ -43,13 +43,9 @@ import org.openmetadata.catalog.jdbi3.GlossaryRepository.GlossaryEntityInterface
 import org.openmetadata.catalog.resources.EntityResourceTest;
 import org.openmetadata.catalog.type.EntityReference;
 import org.openmetadata.catalog.util.TestUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class GlossaryResourceTest extends EntityResourceTest<Glossary> {
-  private static final Logger LOG = LoggerFactory.getLogger(GlossaryResourceTest.class);
-
   public GlossaryResourceTest() {
     super(
         Entity.GLOSSARY,
@@ -63,8 +59,8 @@ public class GlossaryResourceTest extends EntityResourceTest<Glossary> {
   }
 
   @BeforeAll
-  public static void setup(TestInfo test) throws IOException, URISyntaxException {
-    EntityResourceTest.setup(test);
+  public void setup(TestInfo test) throws IOException, URISyntaxException {
+    super.setup(test);
   }
 
   @Override
@@ -75,6 +71,11 @@ public class GlossaryResourceTest extends EntityResourceTest<Glossary> {
         .withDescription(description)
         .withDisplayName(displayName)
         .withOwner(owner);
+  }
+
+  @Override
+  public EntityReference getContainer(Object createRequest) throws URISyntaxException {
+    return null;
   }
 
   // TODO: Entity tests

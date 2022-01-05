@@ -60,7 +60,7 @@ import org.openmetadata.catalog.entity.data.Glossary;
 import org.openmetadata.catalog.jdbi3.CollectionDAO;
 import org.openmetadata.catalog.jdbi3.GlossaryRepository;
 import org.openmetadata.catalog.resources.Collection;
-import org.openmetadata.catalog.security.CatalogAuthorizer;
+import org.openmetadata.catalog.security.Authorizer;
 import org.openmetadata.catalog.security.SecurityUtil;
 import org.openmetadata.catalog.type.EntityHistory;
 import org.openmetadata.catalog.type.EntityReference;
@@ -78,7 +78,7 @@ import org.openmetadata.catalog.util.ResultList;
 public class GlossaryResource {
   public static final String COLLECTION_PATH = "v1/glossary/";
   private final GlossaryRepository dao;
-  private final CatalogAuthorizer authorizer;
+  private final Authorizer authorizer;
 
   public static void addHref(UriInfo uriInfo, EntityReference ref) {
     ref.withHref(RestUtil.getHref(uriInfo, COLLECTION_PATH, ref.getId()));
@@ -97,7 +97,7 @@ public class GlossaryResource {
   }
 
   @Inject
-  public GlossaryResource(CollectionDAO dao, CatalogAuthorizer authorizer) {
+  public GlossaryResource(CollectionDAO dao, Authorizer authorizer) {
     Objects.requireNonNull(dao, "GlossaryRepository must not be null");
     this.dao = new GlossaryRepository(dao);
     this.authorizer = authorizer;
@@ -394,8 +394,8 @@ public class GlossaryResource {
         @ApiResponse(responseCode = "200", description = "OK"),
         @ApiResponse(responseCode = "404", description = "glossary for instance {id} is not found")
       })
-  public Response delete(@Context UriInfo uriInfo, @PathParam("id") String id) {
-    dao.delete(UUID.fromString(id));
+  public Response delete(@Context UriInfo uriInfo, @PathParam("id") String id) throws IOException {
+    dao.delete(UUID.fromString(id), false);
     return Response.ok().build();
   }
 
